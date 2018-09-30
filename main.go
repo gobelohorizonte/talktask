@@ -1,14 +1,31 @@
 package main
 
 import (
+	"context"
 	"log"
-	"net/http"
 
 	"github.com/waltton/talktask/handler"
+	"github.com/waltton/talktask/manager"
+	"github.com/waltton/talktask/ws"
 )
 
 func main() {
-	h := handler.New()
+	log.Println("Starting talktasks...")
 
-	log.Panic(http.ListenAndServe("0.0.0.0:8080", h))
+	sm := manager.New(context.Background())
+
+	runWebServer := ws.New(
+		sm.Context,
+		ws.Config{
+			Host:             "0.0.0.0",
+			Port:             "4040",
+			UseSystemdSocket: false,
+		},
+		handler.New(),
+	)
+
+	sm.CheckSigToQuit()
+	sm.RunServiceFunc(runWebServer)
+
+	sm.WaitServices()
 }
