@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/coreos/go-systemd/activation"
-	"github.com/coreos/go-systemd/daemon"
 	"github.com/pkg/errors"
 )
 
@@ -68,9 +67,6 @@ func (s *server) run() error {
 	if err != nil {
 		return errors.Wrap(err, "fail to get any listner")
 	}
-
-	// Notify that is ready when running under systemd, not necessary systemd socket
-	daemon.SdNotify(false, "READY=1")
 
 	done := make(chan error)
 
