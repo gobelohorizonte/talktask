@@ -7,6 +7,6 @@ Demonstrar com exemplo pratico alguns padrões que encontro e uso no dia a dia i
 ## Talking points
 - Pool de workers (ainda não implementado)
 - Batch insert (ainda não implementado)
-- Systemd socket
+- Systemd socket (falta os arquivos de configuração do systemd)
 - Graceful shutdown
 - etc...
