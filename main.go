@@ -29,7 +29,7 @@ func main() {
 	sm.CheckSigToQuit()
 	sm.RunServiceFunc(runWebServer)
 
-	// Notify that is ready when running under systemd, not necessary systemd socket
+	// Notify that is ready when running under systemd, not necessarily systemd socket
 	daemon.SdNotify(false, "READY=1")
 
 	sm.WaitServices()
