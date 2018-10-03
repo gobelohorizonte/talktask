@@ -2,6 +2,8 @@ package handler
 
 import (
 	"net/http"
+
+	"github.com/urfave/negroni"
 )
 
 type handler struct{}
@@ -14,5 +16,9 @@ func New() http.Handler {
 
 	mux.HandleFunc("/", h.delay)
 
-	return mux
+	n := negroni.New()
+	n.Use(negroni.NewLogger())
+	n.UseHandler(mux)
+
+	return n
 }
