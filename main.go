@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/coreos/go-systemd/daemon"
 	"github.com/waltton/talktask/handler"
@@ -18,9 +19,9 @@ func main() {
 	runWebServer := ws.New(
 		sm.Context,
 		ws.Config{
-			Host:             "0.0.0.0",
-			Port:             "4040",
-			UseSystemdSocket: false,
+			Host:             os.Getenv("GOTALK_HOST"),
+			Port:             os.Getenv("GOTALK_PORT"),
+			UseSystemdSocket: os.Getenv("GOTALK_USE_SYSTEMD_SOCKET") == "true",
 		},
 		handler.New(),
 	)
