@@ -37,7 +37,7 @@ func New(ctx context.Context, cfg Config, handler http.Handler) func() error {
 	return ws.run
 }
 
-func getListner(cfg Config) (listner net.Listener, err error) {
+func getListner(cfg Config) (net.Listener, error) {
 	if cfg.UseSystemdSocket {
 		listeners, err := activation.Listeners()
 		if err != nil {
@@ -48,17 +48,18 @@ func getListner(cfg Config) (listner net.Listener, err error) {
 			return nil, errors.Wrap(err, "got an unexpected number of socket activation")
 		}
 
-		listner = listeners[0]
-		log.Printf("Listening on systemd socket: %s\n", listner.Addr())
+		log.Printf("Listening on systemd socket: %s\n", listeners[0].Addr())
+		return listeners[0], nil
 	}
 
 	addr := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
-	if listner, err = net.Listen("tcp", addr); err != nil {
+	listner, err := net.Listen("tcp", addr)
+	if err != nil {
 		return nil, errors.Wrap(err, "fail to get a tcp listner")
 	}
 	log.Printf("Listening on: %s\n", addr)
 
-	return
+	return listner, err
 }
 
 func (s *server) run() error {
