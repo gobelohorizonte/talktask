@@ -3,10 +3,11 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"time"
+
+	"github.com/waltton/talktask/acd"
 )
 
 func (h *handler) delay(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(time.Second)
+	h.jobs <- acd.Job{}
 	fmt.Fprint(w, "ok")
 }
