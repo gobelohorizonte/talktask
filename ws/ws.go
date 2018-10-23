@@ -10,23 +10,18 @@ import (
 
 	"github.com/coreos/go-systemd/activation"
 	"github.com/pkg/errors"
-)
 
-// Config contains parameters to the webserver
-type Config struct {
-	Host             string
-	Port             string
-	UseSystemdSocket bool
-}
+	"github.com/waltton/talktask/config"
+)
 
 type server struct {
 	ctx context.Context
-	cfg Config
+	cfg config.Server
 	srv *http.Server
 }
 
 // New creates a new server instance
-func New(ctx context.Context, cfg Config, handler http.Handler) func() error {
+func New(ctx context.Context, cfg config.Server, handler http.Handler) func() error {
 	srv := &http.Server{
 		Handler:     handler,
 		IdleTimeout: time.Second * 60,
@@ -37,7 +32,7 @@ func New(ctx context.Context, cfg Config, handler http.Handler) func() error {
 	return ws.run
 }
 
-func getListner(cfg Config) (net.Listener, error) {
+func getListner(cfg config.Server) (net.Listener, error) {
 	if cfg.UseSystemdSocket {
 		listeners, err := activation.Listeners()
 		if err != nil {

@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"log"
-	"os"
-	"strconv"
 
 	"github.com/coreos/go-systemd/daemon"
 	"github.com/pkg/errors"
+
 	"github.com/waltton/talktask/acd"
+	"github.com/waltton/talktask/config"
 	"github.com/waltton/talktask/handler"
 	"github.com/waltton/talktask/manager"
 	"github.com/waltton/talktask/ws"
@@ -19,35 +19,21 @@ func main() {
 
 	sm := manager.New(context.Background())
 
-	acdPoolSize, err := strconv.Atoi(os.Getenv("GOTALK_ACD_POOL_SIZE"))
+	cfg, err := config.Load()
 	if err != nil {
-		panic(errors.Wrap(err, "got an invalid value for 'GOTALK_ACD_POOL_SIZE'"))
+		log.Fatal(errors.Wrap(err, "Could not load config"))
 	}
 
-	acdQueueSize, err := strconv.Atoi(os.Getenv("GOTALK_ACD_QUEUEL_SIZE"))
-	if err != nil {
-		panic(errors.Wrap(err, "got an invalid value for 'GOTALK_ACD_QUEUEL_SIZE'"))
-	}
+	jobs := make(chan acd.Job, cfg.Options.ACD.QueueSize)
+	runACD := acd.New(sm.Context, cfg.Options.ACD.PoolSize, jobs)
 
-	jobs := make(chan acd.Job, acdQueueSize)
-	runACD := acd.New(sm.Context, acdPoolSize, jobs)
-
-	runWebServer := ws.New(
-		sm.Context,
-		ws.Config{
-			Host:             os.Getenv("GOTALK_HOST"),
-			Port:             os.Getenv("GOTALK_PORT"),
-			UseSystemdSocket: os.Getenv("GOTALK_USE_SYSTEMD_SOCKET") == "true",
-		},
-		handler.New(jobs),
-	)
+	runWebServer := ws.New(sm.Context, cfg.Server, handler.New(jobs))
 
 	sm.CheckSigToQuit()
 	sm.RunServiceFunc(runWebServer)
 	sm.RunServiceFunc(runACD)
 
-	// Notify that is ready when running under systemd, not necessarily systemd socket
-	daemon.SdNotify(false, "READY=1")
+	daemon.SdNotify(false, "READY=1") // Notify that is ready when running under systemd, not necessarily systemd socket
 
 	sm.WaitServices()
 }
