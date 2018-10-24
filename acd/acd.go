@@ -2,6 +2,7 @@ package acd
 
 import (
 	"context"
+	"log"
 	"sync"
 	"time"
 
@@ -23,6 +24,15 @@ func New(ctx context.Context, poolSize int, jobs chan Job) manager.ServiceFunc {
 	return p.run
 }
 
+func (p *pool) drain() {
+	log.Printf("%d jobs were marked for recovery", len(p.jobs))
+
+	for range p.jobs {
+		// database ?!
+	}
+
+}
+
 func (p *pool) run() error {
 	var wg sync.WaitGroup
 
@@ -32,6 +42,10 @@ func (p *pool) run() error {
 	}
 
 	wg.Wait()
+
+	close(p.jobs)
+
+	p.drain()
 
 	return nil
 }
