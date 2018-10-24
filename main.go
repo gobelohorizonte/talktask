@@ -15,8 +15,6 @@ import (
 )
 
 func main() {
-	log.Println("Starting talktasks...")
-
 	sm := manager.New(context.Background())
 
 	cfg, err := config.Load()

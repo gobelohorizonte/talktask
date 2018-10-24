@@ -2,7 +2,6 @@ package acd
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
@@ -55,5 +54,4 @@ loop:
 
 func (p *pool) do(job Job) {
 	time.Sleep(time.Second)
-	fmt.Println("job done")
 }
