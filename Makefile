@@ -5,5 +5,5 @@ run:
 
 build-upload:
 	GOOS=linux GOARCH=amd64 go build -v .
-	rsync -v --progress ./talktask root@gotalk.waltton.com.br:/root/talktask
+	rsync -v --progress ./talktask root@gotalk-demo.waltton.com.br:/root/talktask
 	rm ./talktask
