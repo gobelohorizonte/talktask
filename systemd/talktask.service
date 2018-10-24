@@ -4,18 +4,17 @@ After=network.target
 Requires=talktask.socket
 
 [Service]
-Environment=GOTALK_HOST=0.0.0.0
-Environment=GOTALK_PORT=4040
+Environment=GOTALK_ACD_POOL_SIZE=4
+Environment=GOTALK_ACD_QUEUEL_SIZE=4
 Environment=GOTALK_USE_SYSTEMD_SOCKET=true
-
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=talktask
 Type=simple
 WorkingDirectory=/root/talktask
 ExecStart=/root/talktask/talktask
-ExecReload=/bin/kill -INT $MAINPID
 Restart=on-failure
+TimeoutStopSec=60
 
 [Install]
 WantedBy=multi-user.target
