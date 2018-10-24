@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+	"syscall"
 )
 
 // ServiceManager enable the execution of multiple services and do an graceful shutdown when one of them fail
@@ -51,7 +52,7 @@ func (sm *ServiceManager) WaitServices() {
 func (sm *ServiceManager) CheckSigToQuit() {
 	sm.RunServiceFunc(func() error {
 		sigquit := make(chan os.Signal, 1)
-		signal.Notify(sigquit, os.Interrupt, os.Kill)
+		signal.Notify(sigquit, os.Interrupt, syscall.SIGTERM)
 
 		select {
 		case sig := <-sigquit:
