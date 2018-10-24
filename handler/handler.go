@@ -13,7 +13,7 @@ type handler struct {
 
 // New retorna um http.Handler
 func New(jobs chan acd.Job) http.Handler {
-	h := handler{}
+	h := handler{jobs}
 
 	mux := http.NewServeMux()
 
